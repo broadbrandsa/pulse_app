@@ -28,6 +28,75 @@
     transition-timing-function: inherit;
 }
 
+/* ── PulseApp Theme Variables ── */
+:root, .dark-mode {
+    --pa-bg-base: #0A0A0A;
+    --pa-bg-surface: #111111;
+    --pa-bg-elevated: #1A1A1A;
+    --pa-bg-sidebar: #0D0D0D;
+    --pa-bg-topbar: #0D0D0D;
+    --pa-bg-hover: #161616;
+    --pa-bg-active: rgba(90,78,255,0.10);
+    --pa-border-subtle: #1A1A1A;
+    --pa-border-default: #262626;
+    --pa-border-emphasis: #333333;
+    --pa-text-primary: #FAFAFA;
+    --pa-text-secondary: #A1A1AA;
+    --pa-text-muted: #71717A;
+    --pa-brand: #5A4EFF;
+    --pa-brand-hover: #4840E8;
+}
+
+.light-mode {
+    --pa-bg-base: #F5F5F7;
+    --pa-bg-surface: #FFFFFF;
+    --pa-bg-elevated: #F0F0F2;
+    --pa-bg-sidebar: #FFFFFF;
+    --pa-bg-topbar: #FFFFFF;
+    --pa-bg-hover: #F0F0F2;
+    --pa-bg-active: rgba(90,78,255,0.08);
+    --pa-border-subtle: #E5E5E5;
+    --pa-border-default: #E0E0E0;
+    --pa-border-emphasis: #D0D0D0;
+    --pa-text-primary: #111111;
+    --pa-text-secondary: #52525B;
+    --pa-text-muted: #71717A;
+    --pa-brand: #5A4EFF;
+    --pa-brand-hover: #4840E8;
+}
+
+/* ── Light-mode overrides for hardcoded dark colors in page components ── */
+.light-mode {
+    /* Backgrounds */
+    & .bg-\[\#0A0A0A\] { background-color: #F5F5F7 !important; }
+    & .bg-\[\#0D0D0D\] { background-color: #FFFFFF !important; }
+    & .bg-\[\#111111\] { background-color: #FFFFFF !important; }
+    & .bg-\[\#161616\] { background-color: #F5F5F7 !important; }
+    & .bg-\[\#1A1A1A\] { background-color: #F0F0F2 !important; }
+    & .bg-\[\#1A1A2E\] { background-color: rgba(90,78,255,0.06) !important; }
+
+    /* Text */
+    & .text-\[\#FAFAFA\] { color: #111111 !important; }
+    & .text-\[\#A1A1AA\] { color: #52525B !important; }
+    & .text-\[\#71717A\] { color: #71717A !important; }
+
+    /* Borders */
+    & .border-\[\#262626\] { border-color: #E0E0E0 !important; }
+    & .border-\[\#1A1A1A\] { border-color: #E5E5E5 !important; }
+    & .border-\[\#333333\] { border-color: #D0D0D0 !important; }
+
+    /* Hover states */
+    & .hover\:bg-\[\#161616\]:hover { background-color: #F0F0F2 !important; }
+    & .hover\:bg-\[\#1A1A1A\]:hover { background-color: #E8E8EA !important; }
+    & .hover\:text-\[\#FAFAFA\]:hover { color: #111111 !important; }
+    & .hover\:border-\[\#333333\]:hover { border-color: #D0D0D0 !important; }
+
+    /* SVG fill overrides */
+    & .fill-\[\#111111\] { fill: #FFFFFF !important; }
+    & .stroke-\[\#262626\] { stroke: #E0E0E0 !important; }
+    & .fill-\[\#0A0A0A\] { fill: #F5F5F7 !important; }
+}
+
 html,
 body {
     font-family: var(--font-body);
