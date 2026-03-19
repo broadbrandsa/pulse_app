@@ -465,3 +465,116 @@ export interface BookingPattern {
   mostFrequentTime: string;
   consistencyPercent: number;
 }
+
+// === Client Portal Types ===
+
+export interface ClientProfile {
+  id: string;
+  name: string;
+  initials: string;
+  email: string;
+  phone: string;
+  dob: string;
+  memberSince: string;
+  membershipType: string;
+  sessionsTotal: number;
+  sessionsRemaining: number;
+  loyaltyPoints: number;
+  loyaltyTier: string;
+  streakDays: number;
+  totalSessions: number;
+  weightKg: number;
+  weightGoalKg: number;
+  bodyFatPercent: number;
+  referralCode: string;
+  referralCount: number;
+  referralPointsEarned: number;
+}
+
+export interface ClientTodaysSession {
+  date: string;
+  time: string;
+  endTime: string;
+  type: string;
+  location: string;
+  status: string;
+  trainer: string;
+}
+
+export interface WorkoutExercise {
+  id: number;
+  name: string;
+  sets: number;
+  reps: number | string;
+  rest: number;
+  suggestedWeight: string;
+  trainerNote: string | null;
+  completed: boolean;
+}
+
+export interface ClientWorkout {
+  programName: string;
+  week: number;
+  day: number;
+  dayName: string;
+  totalExercises: number;
+  estimatedMinutes: number;
+  trainerNote: string;
+  exercises: WorkoutExercise[];
+}
+
+export interface ClientMessage {
+  id: number;
+  sender?: string;
+  type?: string;
+  text: string;
+  time: string;
+  date: string;
+}
+
+export interface NutritionMeal {
+  name: string;
+  description: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  items: string[];
+  eaten: boolean;
+}
+
+export interface ClientNutritionPlan {
+  dailyCalories: number;
+  loggedCalories: number;
+  targets: { protein: number; carbs: number; fat: number };
+  logged: { protein: number; carbs: number; fat: number };
+  meals: NutritionMeal[];
+}
+
+export interface WeightEntry {
+  date: string;
+  weight: number;
+}
+
+export interface ClientPersonalBest {
+  exercise: string;
+  best: string;
+  date: string;
+  improvement: string;
+}
+
+export interface ClientMilestone {
+  icon: string;
+  title: string;
+  date: string;
+  celebrated: boolean;
+}
+
+export interface ClientNotification {
+  id: number;
+  type: string;
+  text: string;
+  time: string;
+  read: boolean;
+  action?: string;
+}

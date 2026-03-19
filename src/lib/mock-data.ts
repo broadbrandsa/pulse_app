@@ -741,3 +741,118 @@ export const resources: Resource[] = [
   { id: "res17", name: "Progress Photo Guidelines", category: "Client Handbooks", fileType: "pdf", fileSize: "0.6 MB", url: "#", assignedTo: "all", downloadCount: 33, dateAdded: "2025-02-10" },
   { id: "res18", name: "FAQ & Policies", category: "Client Handbooks", fileType: "pdf", fileSize: "0.9 MB", url: "#", assignedTo: "all", downloadCount: 29, dateAdded: "2025-01-01" },
 ];
+
+// === Client Portal Data ===
+
+export const clientProfile = {
+  id: 'client-001',
+  name: 'Kefilwe Sithole',
+  initials: 'KS',
+  email: 'kefilwe@email.com',
+  phone: '+27 82 345 6789',
+  dob: '1992-05-15',
+  memberSince: '2025-01-12',
+  membershipType: 'PT Package',
+  sessionsTotal: 10,
+  sessionsRemaining: 4,
+  loyaltyPoints: 1240,
+  loyaltyTier: 'Gold',
+  streakDays: 12,
+  totalSessions: 28,
+  weightKg: 73.2,
+  weightGoalKg: 68,
+  bodyFatPercent: 26.1,
+  referralCode: 'KEFILWE10',
+  referralCount: 1,
+  referralPointsEarned: 100,
+};
+
+export const clientTodaysSession = {
+  date: 'Today',
+  time: '10:00',
+  endTime: '11:00',
+  type: 'Personal Training',
+  location: 'Home Studio, 24 Kloof Street, Cape Town',
+  status: 'confirmed',
+  trainer: 'Sipho Dlamini',
+};
+
+export const clientWorkout = {
+  programName: '12-Week Body Transformation',
+  week: 4,
+  day: 2,
+  dayName: 'Lower Body',
+  totalExercises: 5,
+  estimatedMinutes: 55,
+  trainerNote: "Push hard today Kefilwe — you're halfway through Week 4! Focus on depth on the squats.",
+  exercises: [
+    { id: 1, name: 'Barbell Back Squat', sets: 4, reps: 12, rest: 60, suggestedWeight: '40kg', trainerNote: 'Focus on depth, keep chest up', completed: false },
+    { id: 2, name: 'Romanian Deadlift', sets: 3, reps: 10, rest: 90, suggestedWeight: '35kg', trainerNote: 'Hinge at hips, slight knee bend', completed: false },
+    { id: 3, name: 'Leg Press', sets: 3, reps: 15, rest: 60, suggestedWeight: '60kg', trainerNote: 'Full range of motion', completed: false },
+    { id: 4, name: 'Walking Lunges', sets: 3, reps: '12 each leg', rest: 60, suggestedWeight: 'Bodyweight', trainerNote: null, completed: false },
+    { id: 5, name: 'Glute Bridge', sets: 3, reps: 20, rest: 45, suggestedWeight: 'Bodyweight', trainerNote: 'Squeeze at the top for 2 seconds', completed: false },
+  ]
+};
+
+export const clientMessages = [
+  { id: 1, sender: 'sipho', text: "Great session today Kefilwe! Your squats are looking much stronger 💪", time: '11:30 AM', date: 'Today' },
+  { id: 2, sender: 'kefilwe', text: 'Thank you! I really felt it in my glutes today lol', time: '11:45 AM', date: 'Today' },
+  { id: 3, sender: 'sipho', text: "Haha that means it's working! Make sure you stretch tonight — 10 mins minimum", time: '11:47 AM', date: 'Today' },
+  { id: 4, sender: 'kefilwe', text: 'Will do! Same time Thursday?', time: '11:50 AM', date: 'Today' },
+  { id: 5, sender: 'sipho', text: "Yes, Thursday 10am is booked. I've also uploaded your new workout plan for next week — check it out when you get a chance", time: '11:52 AM', date: 'Today' },
+  { id: 6, sender: 'kefilwe', text: "Just saw it, looks tough! 4 sets of deadlifts 😅", time: '12:05 PM', date: 'Today' },
+  { id: 7, sender: 'sipho', text: "You can handle it! You've come a long way. Check your progress — you're down 5kg already 🏆", time: '12:07 PM', date: 'Today' },
+  { id: 8, sender: 'kefilwe', text: 'That actually made my day, thank you!', time: '12:10 PM', date: 'Today' },
+  { id: 9, sender: 'sipho', text: "Keep going! Don't forget to log your meals today, you were close to your protein target yesterday", time: '12:15 PM', date: 'Today' },
+  { id: 10, sender: 'kefilwe', text: 'On it 👊', time: '12:18 PM', date: 'Today' },
+  { id: 11, type: 'system', text: 'Sipho assigned you a new workout — Lower Body Week 4', time: '12:20 PM', date: 'Today' },
+  { id: 12, sender: 'sipho', text: "See you Thursday! Get a good sleep tonight 🙌", time: '12:30 PM', date: 'Today' },
+];
+
+export const clientNutritionPlan = {
+  dailyCalories: 2100,
+  loggedCalories: 1820,
+  targets: { protein: 165, carbs: 240, fat: 70 },
+  logged: { protein: 142, carbs: 198, fat: 58 },
+  meals: [
+    { name: 'Breakfast', description: 'Protein Oats + Banana', calories: 520, protein: 32, carbs: 68, fat: 12, items: ['1 cup rolled oats', '1 scoop protein powder', '1 banana', '250ml milk'], eaten: true },
+    { name: 'Snack 1', description: 'Greek Yoghurt + Almonds', calories: 280, protein: 18, carbs: 22, fat: 14, items: ['200g Greek yoghurt', '30g almonds'], eaten: true },
+    { name: 'Lunch', description: 'Chicken Rice Bowl', calories: 640, protein: 52, carbs: 68, fat: 14, items: ['200g chicken breast', '1 cup brown rice', 'Mixed veg', '1 tbsp olive oil'], eaten: false },
+    { name: 'Snack 2', description: 'Protein Shake', calories: 180, protein: 30, carbs: 8, fat: 3, items: ['1.5 scoops whey protein', '300ml water'], eaten: false },
+    { name: 'Dinner', description: 'Beef Stir Fry with Veg', calories: 580, protein: 45, carbs: 42, fat: 20, items: ['200g lean beef strips', 'Mixed stir-fry veg', '1 tbsp soy sauce', 'Brown rice'], eaten: false },
+  ]
+};
+
+export const weightHistory = [
+  { date: 'Jan 12', weight: 78.4 },
+  { date: 'Jan 26', weight: 77.1 },
+  { date: 'Feb 9', weight: 76.2 },
+  { date: 'Feb 23', weight: 75.0 },
+  { date: 'Mar 9', weight: 73.8 },
+  { date: 'Mar 16', weight: 73.2 },
+];
+
+export const clientPersonalBests = [
+  { exercise: 'Squat', best: '80kg', date: 'Mar 10', improvement: '+20kg' },
+  { exercise: 'Bench Press', best: '55kg', date: 'Mar 5', improvement: '+15kg' },
+  { exercise: 'Deadlift', best: '90kg', date: 'Mar 12', improvement: '+25kg' },
+  { exercise: '5km Run', best: '28:14', date: 'Feb 22', improvement: '-4:30' },
+];
+
+export const clientMilestones = [
+  { icon: 'trophy', title: '10 sessions completed', date: 'Feb 3, 2025', celebrated: false },
+  { icon: 'lightning', title: 'Personal best: Squat 80kg', date: 'Mar 10, 2025', celebrated: false },
+  { icon: 'target', title: 'Lost 3kg', date: 'Feb 20, 2025', celebrated: true },
+  { icon: 'calendar', title: '1 month with Sipho', date: 'Feb 12, 2025', celebrated: true },
+];
+
+export const clientNotifications = [
+  { id: 1, type: 'session', text: 'Your PT Session with Sipho is tomorrow at 10:00', time: '2 hours ago', read: false, action: 'Book again' },
+  { id: 2, type: 'milestone', text: 'You completed 10 sessions! You earned a milestone badge.', time: 'Yesterday', read: false },
+  { id: 3, type: 'points', text: 'You earned 40 points from your session. Balance: 1,240 pts', time: 'Yesterday', read: true },
+  { id: 4, type: 'workout', text: 'Sipho uploaded your Week 4 workout plan', time: '2 days ago', read: true, action: 'View workout' },
+  { id: 5, type: 'loyalty', text: "You're 260 points away from Platinum tier!", time: '3 days ago', read: true },
+  { id: 6, type: 'message', text: 'Sipho sent you a message', time: '3 days ago', read: true, action: 'View' },
+  { id: 7, type: 'credits', text: 'You have 4 sessions remaining in your PT Package', time: '1 week ago', read: true, action: 'Top up' },
+  { id: 8, type: 'welcome', text: 'Welcome to PulseApp, Kefilwe! Your fitness journey starts here.', time: 'Jan 12', read: true },
+];
