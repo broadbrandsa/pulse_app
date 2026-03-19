@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, Suspense } from "react";
+import { useState, useCallback, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -225,6 +225,85 @@ const fileTypeIcons: Record<string, { bg: string; text: string }> = {
   XLSX: { bg: "bg-green-500/20", text: "text-green-400" },
 };
 
+const MOCK_CLIENTS_LIST = ["Thando", "Craig", "Zanele", "Annelize", "Ayanda"];
+
+const RESOURCE_CATEGORY_OPTIONS = ["Workout Guides", "Nutrition Guides", "Onboarding Documents", "Recovery & Mobility", "Client Handbooks"];
+const FILE_TYPE_OPTIONS = ["PDF", "Video", "Image"];
+
+function downloadTextFile(filename: string, content: string) {
+  const blob = new Blob([content], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+/* Inline SVG icon components */
+function SendIcon({ className = "w-4 h-4" }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
+    </svg>
+  );
+}
+
+function DownloadIcon({ className = "w-4 h-4" }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+    </svg>
+  );
+}
+
+/* Reusable Send Modal */
+function SendModal({ title, itemName, onClose, onSend }: { title: string; itemName: string; onClose: () => void; onSend: (client: string) => void }) {
+  const [selectedClient, setSelectedClient] = useState(MOCK_CLIENTS_LIST[0]);
+  const [method, setMethod] = useState<"whatsapp" | "email">("whatsapp");
+
+  return (
+    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={onClose}>
+      <div className="bg-[#111111] border border-[#262626] rounded-2xl p-6 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
+        <h2 className="text-lg font-semibold text-[#FAFAFA] mb-1">{title}</h2>
+        <p className="text-sm text-[#A1A1AA] mb-4">{itemName}</p>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm text-[#A1A1AA] mb-1">Select Client</label>
+            <select value={selectedClient} onChange={(e) => setSelectedClient(e.target.value)} className="w-full bg-[#0A0A0A] border border-[#262626] rounded-xl text-[#FAFAFA] min-h-[44px] px-4 text-sm outline-none focus:border-[#5A4EFF] transition duration-100 ease-linear appearance-none">
+              {MOCK_CLIENTS_LIST.map((c) => <option key={c} value={c}>{c}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm text-[#A1A1AA] mb-2">Send via</label>
+            <div className="flex gap-2">
+              <button onClick={() => setMethod("whatsapp")} className={`flex-1 min-h-[44px] rounded-xl text-sm font-medium transition duration-100 ease-linear ${method === "whatsapp" ? "bg-[#22C55E] text-white" : "bg-[#0A0A0A] border border-[#262626] text-[#A1A1AA] hover:text-[#FAFAFA]"}`}>WhatsApp</button>
+              <button onClick={() => setMethod("email")} className={`flex-1 min-h-[44px] rounded-xl text-sm font-medium transition duration-100 ease-linear ${method === "email" ? "bg-[#5A4EFF] text-white" : "bg-[#0A0A0A] border border-[#262626] text-[#A1A1AA] hover:text-[#FAFAFA]"}`}>Email</button>
+            </div>
+          </div>
+        </div>
+        <div className="flex gap-3 mt-6">
+          <button onClick={onClose} className="flex-1 min-h-[44px] px-4 bg-[#0A0A0A] border border-[#262626] text-[#FAFAFA] rounded-xl font-medium hover:bg-[#1a1a1a] transition duration-100 ease-linear text-sm">Cancel</button>
+          <button onClick={() => onSend(selectedClient)} className="flex-1 min-h-[44px] px-4 bg-[#5A4EFF] text-white rounded-xl font-medium hover:bg-[#4940d9] transition duration-100 ease-linear text-sm">Send</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* Reusable Toast */
+function Toast({ message, onDone }: { message: string; onDone: () => void }) {
+  useEffect(() => {
+    const t = setTimeout(onDone, 3000);
+    return () => clearTimeout(t);
+  }, [onDone]);
+  return (
+    <div className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-[#22C55E] text-white rounded-xl px-4 py-3 z-[60] text-sm font-medium shadow-lg whitespace-nowrap">
+      {message}
+    </div>
+  );
+}
+
 // ─── Tab definitions ─────────────────────────────────────────────────────────
 
 const TABS = [
@@ -264,6 +343,8 @@ function ProgrammesTab() {
   const [newWeeks, setNewWeeks] = useState(8);
   const [newCategory, setNewCategory] = useState<string>(PROGRAMME_CATEGORIES[0]);
   const [newDifficulty, setNewDifficulty] = useState<string>(PROGRAMME_DIFFICULTIES[0]);
+  const [sendProgramme, setSendProgramme] = useState<Programme | null>(null);
+  const [toastMsg, setToastMsg] = useState("");
 
   const filtered = programmes.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase()) || p.category.toLowerCase().includes(search.toLowerCase())
@@ -342,7 +423,15 @@ function ProgrammesTab() {
                 ))}
                 {p.clients.length > 4 && <div className="w-7 h-7 rounded-full bg-[#262626] flex items-center justify-center text-[10px] text-[#71717A] border-2 border-[#111111]">+{p.clients.length - 4}</div>}
               </div>
-              <span className="text-xs text-[#71717A]">{p.totalExercises} exercises</span>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-[#71717A]">{p.totalExercises} exercises</span>
+                <button onClick={(e) => { e.stopPropagation(); setSendProgramme(p); }} className="min-h-[44px] min-w-[44px] w-8 h-8 rounded-lg bg-[#262626] flex items-center justify-center text-[#A1A1AA] hover:text-[#FAFAFA] transition duration-100 ease-linear" title="Send Programme">
+                  <SendIcon />
+                </button>
+                <button onClick={(e) => { e.stopPropagation(); downloadTextFile(`${p.name.replace(/\s+/g, "_")}.txt`, `Programme: ${p.name}\nDescription: ${p.description}\nDuration: ${p.weeks} weeks\nCategory: ${p.category}\nDifficulty: ${p.difficulty}\nTotal Exercises: ${p.totalExercises}\nCompletion Rate: ${p.completionRate}%`); }} className="min-h-[44px] min-w-[44px] w-8 h-8 rounded-lg bg-[#262626] flex items-center justify-center text-[#A1A1AA] hover:text-[#FAFAFA] transition duration-100 ease-linear" title="Download Programme">
+                  <DownloadIcon />
+                </button>
+              </div>
             </div>
           </div>
         ))}
@@ -386,6 +475,18 @@ function ProgrammesTab() {
           </div>
         </div>
       )}
+
+      {/* Send Programme Modal */}
+      {sendProgramme && (
+        <SendModal
+          title="Send Programme"
+          itemName={sendProgramme.name}
+          onClose={() => setSendProgramme(null)}
+          onSend={(client) => { setToastMsg(`Programme sent to ${client}!`); setSendProgramme(null); }}
+        />
+      )}
+
+      {toastMsg && <Toast message={toastMsg} onDone={() => setToastMsg("")} />}
     </>
   );
 }
@@ -395,23 +496,56 @@ function ProgrammesTab() {
 function ResourcesTab() {
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("All");
+  const [resources, setResources] = useState<Resource[]>(RESOURCES);
+  const [showAddResource, setShowAddResource] = useState(false);
+  const [newResName, setNewResName] = useState("");
+  const [newResCategory, setNewResCategory] = useState(RESOURCE_CATEGORY_OPTIONS[0]);
+  const [newResFileType, setNewResFileType] = useState(FILE_TYPE_OPTIONS[0]);
+  const [newResFileSize, setNewResFileSize] = useState("");
+  const [sendResource, setSendResource] = useState<Resource | null>(null);
+  const [toastMsg, setToastMsg] = useState("");
 
-  const filtered = RESOURCES.filter((r) => {
+  const filtered = resources.filter((r) => {
     const matchSearch = r.name.toLowerCase().includes(search.toLowerCase());
     const matchCategory = categoryFilter === "All" || r.category === categoryFilter;
     return matchSearch && matchCategory;
   });
 
-  const totalDownloads = RESOURCES.reduce((sum, r) => sum + r.downloads, 0);
+  const totalDownloads = resources.reduce((sum, r) => sum + r.downloads, 0);
 
   const stats = [
-    { label: "Total Resources", value: String(RESOURCES.length), color: "text-[#5A4EFF]" },
+    { label: "Total Resources", value: String(resources.length), color: "text-[#5A4EFF]" },
     { label: "Categories", value: String(RESOURCE_CATEGORIES.length), color: "text-[#EEA0FF]" },
     { label: "Total Downloads", value: String(totalDownloads), color: "text-[#E2F4A6]" },
   ];
 
+  const handleAddResource = () => {
+    if (!newResName.trim()) return;
+    const newRes: Resource = {
+      id: `r${Date.now()}`, name: newResName.trim(), category: newResCategory,
+      fileType: newResFileType, fileSize: newResFileSize.trim() || "1.0 MB", downloads: 0,
+    };
+    setResources([newRes, ...resources]);
+    setNewResName(""); setNewResCategory(RESOURCE_CATEGORY_OPTIONS[0]); setNewResFileType(FILE_TYPE_OPTIONS[0]); setNewResFileSize("");
+    setShowAddResource(false);
+  };
+
+  const handleDownloadResource = (r: Resource) => {
+    const content = `Resource: ${r.name}\nCategory: ${r.category}\nFile Type: ${r.fileType}\nFile Size: ${r.fileSize}\nDownloads: ${r.downloads}`;
+    downloadTextFile(`${r.name.replace(/\s+/g, "_")}.txt`, content);
+  };
+
   return (
     <>
+      {/* Header with title and add button */}
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-lg font-semibold text-[#FAFAFA]">Resources</h2>
+        <button onClick={() => setShowAddResource(true)} className="min-h-[44px] px-4 bg-[#5A4EFF] text-white rounded-xl font-medium hover:bg-[#4940d9] transition duration-100 ease-linear flex items-center gap-2 text-sm">
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+          Add Resource
+        </button>
+      </div>
+
       {/* Stats */}
       <div className="grid grid-cols-3 gap-3 mb-6">
         {stats.map((s) => (
@@ -452,10 +586,13 @@ function ResourcesTab() {
                   <span className="text-xs text-[#71717A]">{r.fileSize}</span>
                 </div>
               </div>
-              <div className="flex items-center gap-3 shrink-0">
+              <div className="flex items-center gap-2 shrink-0">
                 <span className="text-xs text-[#71717A]">{r.downloads} downloads</span>
-                <button className="w-8 h-8 rounded-lg bg-[#262626] flex items-center justify-center text-[#A1A1AA] hover:text-[#FAFAFA] transition duration-100 ease-linear">
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                <button onClick={() => setSendResource(r)} className="min-h-[44px] min-w-[44px] w-8 h-8 rounded-lg bg-[#262626] flex items-center justify-center text-[#A1A1AA] hover:text-[#FAFAFA] transition duration-100 ease-linear" title="Send to Client">
+                  <SendIcon />
+                </button>
+                <button onClick={() => handleDownloadResource(r)} className="min-h-[44px] min-w-[44px] w-8 h-8 rounded-lg bg-[#262626] flex items-center justify-center text-[#A1A1AA] hover:text-[#FAFAFA] transition duration-100 ease-linear" title="Download">
+                  <DownloadIcon />
                 </button>
               </div>
             </div>
@@ -466,6 +603,53 @@ function ResourcesTab() {
       {filtered.length === 0 && (
         <div className="text-center py-12 text-[#71717A]"><p>No resources match your search.</p></div>
       )}
+
+      {/* Add Resource Modal */}
+      {showAddResource && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setShowAddResource(false)}>
+          <div className="bg-[#111111] border border-[#262626] rounded-2xl p-6 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
+            <h2 className="text-lg font-semibold text-[#FAFAFA] mb-4">Add Resource</h2>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm text-[#A1A1AA] mb-1">Name *</label>
+                <input type="text" value={newResName} onChange={(e) => setNewResName(e.target.value)} placeholder="e.g. Beginner Nutrition Guide" className="w-full bg-[#0A0A0A] border border-[#262626] rounded-xl text-[#FAFAFA] min-h-[44px] px-4 text-sm outline-none focus:border-[#5A4EFF] transition duration-100 ease-linear placeholder-[#71717A]" />
+              </div>
+              <div>
+                <label className="block text-sm text-[#A1A1AA] mb-1">Category</label>
+                <select value={newResCategory} onChange={(e) => setNewResCategory(e.target.value)} className="w-full bg-[#0A0A0A] border border-[#262626] rounded-xl text-[#FAFAFA] min-h-[44px] px-4 text-sm outline-none focus:border-[#5A4EFF] transition duration-100 ease-linear appearance-none">
+                  {RESOURCE_CATEGORY_OPTIONS.map((c) => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm text-[#A1A1AA] mb-1">File Type</label>
+                <select value={newResFileType} onChange={(e) => setNewResFileType(e.target.value)} className="w-full bg-[#0A0A0A] border border-[#262626] rounded-xl text-[#FAFAFA] min-h-[44px] px-4 text-sm outline-none focus:border-[#5A4EFF] transition duration-100 ease-linear appearance-none">
+                  {FILE_TYPE_OPTIONS.map((t) => <option key={t} value={t}>{t}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm text-[#A1A1AA] mb-1">File Size</label>
+                <input type="text" value={newResFileSize} onChange={(e) => setNewResFileSize(e.target.value)} placeholder="e.g. 2.4 MB" className="w-full bg-[#0A0A0A] border border-[#262626] rounded-xl text-[#FAFAFA] min-h-[44px] px-4 text-sm outline-none focus:border-[#5A4EFF] transition duration-100 ease-linear placeholder-[#71717A]" />
+              </div>
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button onClick={() => setShowAddResource(false)} className="flex-1 min-h-[44px] px-4 bg-[#0A0A0A] border border-[#262626] text-[#FAFAFA] rounded-xl font-medium hover:bg-[#1a1a1a] transition duration-100 ease-linear text-sm">Cancel</button>
+              <button onClick={handleAddResource} disabled={!newResName.trim()} className="flex-1 min-h-[44px] px-4 bg-[#5A4EFF] text-white rounded-xl font-medium hover:bg-[#4940d9] transition duration-100 ease-linear text-sm disabled:opacity-50 disabled:cursor-not-allowed">Save</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Send Resource Modal */}
+      {sendResource && (
+        <SendModal
+          title="Send Resource"
+          itemName={sendResource.name}
+          onClose={() => setSendResource(null)}
+          onSend={(client) => { setToastMsg(`Resource sent to ${client}!`); setSendResource(null); }}
+        />
+      )}
+
+      {toastMsg && <Toast message={toastMsg} onDone={() => setToastMsg("")} />}
     </>
   );
 }
@@ -617,6 +801,8 @@ function NutritionPlansTab() {
   const [openDays, setOpenDays] = useState<string[]>([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newPlan, setNewPlan] = useState({ name: "", goal: "Muscle Gain" as string, calories: 2200, protein: 150, carbs: 250, fat: 70 });
+  const [sendClient, setSendClient] = useState<Client | null>(null);
+  const [toastMsg, setToastMsg] = useState("");
 
   const client = clients.find((c) => c.id === selectedClient);
 
@@ -675,6 +861,14 @@ function NutritionPlansTab() {
                 <MacroBar label="Protein" actual={c.protein.actual} target={c.protein.target} color="bg-[#5A4EFF]" />
                 <MacroBar label="Carbs" actual={c.carbs.actual} target={c.carbs.target} color="bg-[#E2F4A6]" />
                 <MacroBar label="Fat" actual={c.fat.actual} target={c.fat.target} color="bg-[#EEA0FF]" />
+              </div>
+              <div className="flex items-center gap-2 mt-3 pt-3 border-t border-[#262626]">
+                <button onClick={(e) => { e.stopPropagation(); setSendClient(c); }} className="flex-1 min-h-[44px] flex items-center justify-center gap-1.5 rounded-xl bg-[#262626] text-[#A1A1AA] hover:text-[#FAFAFA] text-xs font-medium transition duration-100 ease-linear">
+                  <SendIcon className="w-3.5 h-3.5" /> Send
+                </button>
+                <button onClick={(e) => { e.stopPropagation(); downloadTextFile(`${c.name.replace(/\s+/g, "_")}_Nutrition_Plan.txt`, `Nutrition Plan: ${c.name}\nGoal: ${c.goal}\nCalories: ${c.calories.actual} / ${c.calories.target} kcal\nProtein: ${c.protein.actual}g / ${c.protein.target}g\nCarbs: ${c.carbs.actual}g / ${c.carbs.target}g\nFat: ${c.fat.actual}g / ${c.fat.target}g\nCompliance: ${c.compliance}%\nLast Updated: ${c.lastUpdated}`); }} className="flex-1 min-h-[44px] flex items-center justify-center gap-1.5 rounded-xl bg-[#262626] text-[#A1A1AA] hover:text-[#FAFAFA] text-xs font-medium transition duration-100 ease-linear">
+                  <DownloadIcon className="w-3.5 h-3.5" /> Download
+                </button>
               </div>
             </button>
           );
@@ -782,6 +976,18 @@ function NutritionPlansTab() {
           </div>
         </div>
       )}
+
+      {/* Send Nutrition Plan Modal */}
+      {sendClient && (
+        <SendModal
+          title="Send Nutrition Plan"
+          itemName={`${sendClient.name} - ${sendClient.goal}`}
+          onClose={() => setSendClient(null)}
+          onSend={(client) => { setToastMsg(`Nutrition plan sent to ${client}!`); setSendClient(null); }}
+        />
+      )}
+
+      {toastMsg && <Toast message={toastMsg} onDone={() => setToastMsg("")} />}
     </>
   );
 }
