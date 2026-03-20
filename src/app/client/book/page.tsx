@@ -9,10 +9,6 @@ import {
   XClose,
   Edit05,
   CreditCard02,
-  User01,
-  Mail01,
-  Phone,
-  File06,
   ArrowLeft,
   Plus,
   MarkerPin01,
@@ -35,7 +31,7 @@ const upcomingSessions = [
   { id: 2, day: "Mon", date: "24 Mar", time: "09:00", location: "PT Home Studio" },
 ];
 
-const steps = ["Service", "Date & Time", "Details", "Confirm"];
+const steps = ["Service", "Date & Time", "Confirm"];
 
 export default function BookSessionPage() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -43,10 +39,6 @@ export default function BookSessionPage() {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [useCredit, setUseCredit] = useState(false);
-  const [name, setName] = useState("Kefilwe Sithole");
-  const [email, setEmail] = useState("kefilwe@email.com");
-  const [phone, setPhone] = useState("+27 82 345 6789");
-  const [notes, setNotes] = useState("");
   const [confirmed, setConfirmed] = useState(false);
 
   const service = services.find((s) => s.id === selectedService);
@@ -54,7 +46,6 @@ export default function BookSessionPage() {
   const canProceed = () => {
     if (currentStep === 1) return !!selectedService;
     if (currentStep === 2) return !!selectedDate && !!selectedTime;
-    if (currentStep === 3) return !!name && !!email && !!phone;
     return true;
   };
 
@@ -199,48 +190,8 @@ export default function BookSessionPage() {
           </div>
         )}
 
-        {/* ─── STEP 3: Details ─── */}
-        {currentStep === 3 && (
-          <div className="space-y-4">
-            <div className="space-y-1.5">
-              <label className="text-xs font-medium text-[#A1A1AA]">Full Name</label>
-              <div className="flex items-center gap-2 rounded-xl border border-[#262626] bg-[#141414] px-4 py-3">
-                <User01 className="size-4 text-[#52525B]" />
-                <input value={name} onChange={(e) => setName(e.target.value)} className="flex-1 bg-transparent text-sm text-[#FAFAFA] outline-none" />
-              </div>
-            </div>
-            <div className="space-y-1.5">
-              <label className="text-xs font-medium text-[#A1A1AA]">Email</label>
-              <div className="flex items-center gap-2 rounded-xl border border-[#262626] bg-[#141414] px-4 py-3">
-                <Mail01 className="size-4 text-[#52525B]" />
-                <input value={email} onChange={(e) => setEmail(e.target.value)} className="flex-1 bg-transparent text-sm text-[#FAFAFA] outline-none" />
-              </div>
-            </div>
-            <div className="space-y-1.5">
-              <label className="text-xs font-medium text-[#A1A1AA]">Phone</label>
-              <div className="flex items-center gap-2 rounded-xl border border-[#262626] bg-[#141414] px-4 py-3">
-                <Phone className="size-4 text-[#52525B]" />
-                <input value={phone} onChange={(e) => setPhone(e.target.value)} className="flex-1 bg-transparent text-sm text-[#FAFAFA] outline-none" />
-              </div>
-            </div>
-            <div className="space-y-1.5">
-              <label className="text-xs font-medium text-[#A1A1AA]">Notes for your trainer</label>
-              <div className="flex items-start gap-2 rounded-xl border border-[#262626] bg-[#141414] px-4 py-3">
-                <File06 className="mt-0.5 size-4 text-[#52525B]" />
-                <textarea
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Any injuries, preferences, goals..."
-                  rows={3}
-                  className="flex-1 resize-none bg-transparent text-sm text-[#FAFAFA] placeholder-[#52525B] outline-none"
-                />
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ─── STEP 4: Confirm ─── */}
-        {currentStep === 4 && !confirmed && (
+        {/* ─── STEP 3: Confirm ─── */}
+        {currentStep === 3 && !confirmed && (
           <div className="space-y-4">
             <div className="rounded-xl border border-[#262626] bg-[#141414] p-5 space-y-3">
               <p className="text-xs font-medium uppercase tracking-wider text-[#71717A]">Booking Summary</p>
@@ -251,21 +202,13 @@ export default function BookSessionPage() {
                   ["Time", selectedTime],
                   ["Duration", service?.duration],
                   ["Payment", useCredit ? "PT Package Credit" : service?.price],
-                  ["Name", name],
-                  ["Email", email],
-                  ["Phone", phone],
+                  ["Client", "Kefilwe Sithole"],
                 ].map(([label, val]) => (
                   <div key={label} className="flex items-center justify-between text-sm">
                     <span className="text-[#71717A]">{label}</span>
                     <span className="font-medium text-[#FAFAFA]">{val}</span>
                   </div>
                 ))}
-                {notes && (
-                  <div className="border-t border-[#262626] pt-2">
-                    <p className="text-xs text-[#71717A]">Notes</p>
-                    <p className="text-sm text-[#FAFAFA]">{notes}</p>
-                  </div>
-                )}
               </div>
             </div>
             <button
@@ -302,7 +245,7 @@ export default function BookSessionPage() {
                 <ArrowLeft className="size-4" /> Back
               </button>
             )}
-            {currentStep < 4 && (
+            {currentStep < 3 && (
               <button
                 onClick={() => canProceed() && setCurrentStep(currentStep + 1)}
                 disabled={!canProceed()}
